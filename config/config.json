@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "newton-agenda-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/newtonAgenda/NewtonAgendaWebPart.js",
+          "manifest": "./src/webparts/newtonAgenda/NewtonAgendaWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {
+  },
+  "localizedResources": {
+    "NewtonAgendaWebPartStrings": "lib/webparts/newtonAgenda/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+  }
+}
