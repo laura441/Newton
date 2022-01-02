@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styles from './NewtonAgenda.module.scss';
 import { INewtonAgendaProps } from './INewtonAgendaProps';
-import { escape } from '@microsoft/sp-lodash-subset';
 import { INewtonAgendaState } from './INewtonAgendaState';
 import { ISharePointService, SharepointService } from '../../../services/spservices';
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
@@ -14,21 +13,12 @@ import { ListPicker, ListItemPicker } from "@pnp/spfx-controls-react/lib";
 import { TaxonomyPicker, IPickerTerms } from "@pnp/spfx-controls-react/lib/TaxonomyPicker";
 import { Dropdown, DropdownMenuItemType, IDropdownOption, IDropdownStyles } from 'office-ui-fabric-react/lib/Dropdown';
 import { DayOfWeek } from '@fluentui/date-time-utilities/lib/dateValues/dateValues';
-import { Grid, Row, Col } from 'react-material-responsive-grid';
 import { Text, ITextProps } from 'office-ui-fabric-react/lib/Text';
 import {MessageBar, MessageBarType} from 'office-ui-fabric-react';
 import 'office-ui-fabric-react/dist/css/fabric.css';
 
-const stackTokens: IStackTokens = { childrenGap: 40 };
-
-const stackStyles: IStackStyles = {
-  root: {
-    padding: 20,
-  },
-};
 
 let _spService: ISharePointService;
-
 
 export default class NewtonAgenda extends React.Component<INewtonAgendaProps, INewtonAgendaState> {
 
@@ -115,8 +105,7 @@ public columns = (): IViewField[]  =>{
   private async _getRequests(): Promise<void> {
 
     const items = await _spService.getItems();
-    const periodos = await _spService.getField('PeriodoClase');
-    
+    const periodos = await _spService.getField('PeriodoClase');    
     this.setState({items:items,periodo:periodos})
   
 }
@@ -297,12 +286,12 @@ public columns = (): IViewField[]  =>{
           { (this.state.editar === true)?
            <div className={styles.row}>
            
-            <PrimaryButton text="Actualizar" onClick={this._editClick} className={styles.button1} disabled={this._disable1()}/> 
+            <PrimaryButton text="Actualizar" onClick={this._editClick} className={styles.button1} disabled={this._disableEdit()}/> 
             <PrimaryButton text="Cancelar" onClick={this._cancelClick} className={styles.button1}/> 
             </div>
           :
             <div className={styles.row}>
-            <PrimaryButton text="Guardar" onClick={this._saveClick} className={styles.button1} disabled={this._disable()}/>  
+            <PrimaryButton text="Guardar" onClick={this._saveClick} className={styles.button1} disabled={this._disableAdd()}/>  
             <PrimaryButton text="Cancelar" onClick={this._cancelClick} className={styles.button1} /> 
             
           </div>
@@ -316,14 +305,10 @@ public columns = (): IViewField[]  =>{
         
         } 
         </div>
-
-
-         
-     
-        
-    
     );
   }
+
+  //Método para limpiar el estado
   private cleanState (){
     this.setState({
       fechaClase: null,
@@ -340,17 +325,17 @@ public columns = (): IViewField[]  =>{
       item: null,
       error:null,
       info:null,
-
     })
   }
 
-  private _disable ():boolean {
+  //Método deshabilitar botón guardar
+  private _disableAdd ():boolean {
     if (this.state.fechaClase&&this.state.profesorClaseId&&this.state.asignaturaClase&&this.state.alumnoClaseId&&
       this.state.periodoClase&&this.state.asignaturaClase.length!==0){return false}
     else{return true}
   }
-
-  private _disable1 ():boolean {
+  //Método deshabilitar botón actualizar
+  private _disableEdit ():boolean {
     if (this.state.asignaturaClase&&this.state.profesorClase&&this.state.alumnoClase){
       if (this.state.asignaturaClase.length!==0&&this.state.profesorClase.length!==0&&this.state.alumnoClase.length!==0)
       {return false}
@@ -393,29 +378,30 @@ public columns = (): IViewField[]  =>{
     }
   }
 
+  //Método para guardar el periodo en el estado
   private setPeriodo (value:IDropdownOption){
     const text = value.text;
     const key = value.key;
     this.setState({periodoClase: text, periodoClaseKey: key});
   }
-  
+  //Método para guardar la asignatura en el estado
   private setAsignatura(terms : IPickerTerms) {
     this.setState({asignaturaClase: terms});
   }
-
+  //Método para guardar la fecha en el estado
   private handleChangeDate(date:Date){
     this.setState({fechaClase:date});
   }
-
+  //Método al que se llama cuando se cancela el formulario
   private _cancelClick = () => {
     this.cleanState();
     this.setState({editar:false});
   }
-
+  //Método al que se llama cuando se muestra el formulario
   private _showForm = () => {
     this.setState({visible: true});
   }
-
+  //Método al que se llama cuando se guarda una clase
   private  _saveClick = async () =>{
     const fecha = this.state.fechaClase;
     const fecha1 = fecha.setHours(12);
@@ -472,7 +458,7 @@ public columns = (): IViewField[]  =>{
     }
 
   }
-
+  //Método para guardar en el estado el profesor
   private onSelectedItemProfesor(data : { key: string; name: string } []) {
     let k : string;
     for (const item of data){
@@ -480,7 +466,7 @@ public columns = (): IViewField[]  =>{
     }
     this.setState({profesorClase:data, profesorClaseId:k});
   }
-
+  //Método para guardar en el estado al alumno
   private onSelectedItemAlumno(data : { key: string; name: string } []) {
     let k : string;
     for (const item of data){
@@ -488,7 +474,7 @@ public columns = (): IViewField[]  =>{
     }
     this.setState({alumnoClase: data,alumnoClaseId:k});
   }
-
+  //Método para guardar en el estado el item seleccionado
   private _getSelection(items: IClase[]) {
     if (items.length!== 0){
     const itemID = items['0'].ID;
@@ -498,7 +484,7 @@ public columns = (): IViewField[]  =>{
     this.setState({selectionId:null})
     }
   }
-
+  //Método al que se llama cuando se clica en editar en la pantalla principal
   private _edClick = async() => {
     const id = this.state.selectionId;
     const item = await _spService.getItem(id);
@@ -516,7 +502,7 @@ public columns = (): IViewField[]  =>{
       }
 
   }
-
+  //Método al que se llama cuando se modifica una clase
   private  _editClick = async () =>{
     const id = this.state.item.ID;
     const fecha = this.state.fechaClase?this.state.fechaClase:new Date(this.state.item.FechaClase);
@@ -584,6 +570,7 @@ public columns = (): IViewField[]  =>{
     
   }
 
+  //Método al que se llama cuando se elimina una clase
   private _deleteClick = async () => {
 
     const id = this.state.selectionId;
