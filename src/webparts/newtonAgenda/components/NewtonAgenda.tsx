@@ -125,7 +125,7 @@ public columns = (): IViewField[]  =>{
       }
     ];
     const today = new Date();
-    const todayForm = today.toLocaleDateString();
+    const todayForm = this.FormatDate(today);
 
     return (
  
@@ -220,7 +220,7 @@ public columns = (): IViewField[]  =>{
                 dateConvention={DateConvention.Date}
                 value={this.state.editar? (this.state.fechaClase? this.state.fechaClase : new Date (this.state.item.FechaClase)):(this.state.fechaClase? this.state.fechaClase : undefined)}
                 minDate={today}
-                formatDate= {(date)=>date.toLocaleDateString()}
+                formatDate= {(date)=>this.FormatDate(date)}
                 onChange={(date)=>this.handleChangeDate(date)}
                 firstDayOfWeek={DayOfWeek.Monday}
                  />
@@ -416,7 +416,7 @@ public columns = (): IViewField[]  =>{
     let numClase = 0;
 
     this.state.items.map(item =>{
-      const fechaIt = fechaClase.toLocaleDateString() ;
+      const fechaIt = this.FormatDate(fechaClase);
       if (item.FechaClase == fechaIt ){
         if (item.PeriodoClase == periodoClase){
           numClase = numClase + 1 ;
@@ -517,7 +517,7 @@ public columns = (): IViewField[]  =>{
     let existeAlumno = false;
     let numClase = 0;
 
-    const fechaEscogida = fechaClase.toLocaleDateString() ;
+    const fechaEscogida = this.FormatDate(fechaClase);
     const idEscogido = this.state.item.ID;
       
 
@@ -586,4 +586,14 @@ public columns = (): IViewField[]  =>{
     
 
   }
+
+  public FormatDate = (date): string => {
+    var date1 = new Date(date);
+    var year = date1.getFullYear();
+    var month = (1 + date1.getMonth()).toString();
+    month = month.length > 1 ? month : '0' + month;
+    var day = date1.getDate().toString();
+    day = day.length > 1 ? day : '0' + day;
+    return day + '/' + month + '/' + year;
+  };
 }

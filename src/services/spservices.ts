@@ -57,7 +57,7 @@ export class SharepointService {
                 })
 
                 const fecha:Date = new Date(item.FechaClase);
-                const fecha1 = fecha.toLocaleDateString();
+                const fecha1 = this.FormatDate(fecha);
 
                 data.push({
                     ID: item.ID,
@@ -186,7 +186,15 @@ export class SharepointService {
         });
     }
     
-
+    public FormatDate = (date): string => {
+        var date1 = new Date(date);
+        var year = date1.getFullYear();
+        var month = (1 + date1.getMonth()).toString();
+        month = month.length > 1 ? month : '0' + month;
+        var day = date1.getDate().toString();
+        day = day.length > 1 ? day : '0' + day;
+        return day + '/' + month + '/' + year;
+      };
 
 
 }
